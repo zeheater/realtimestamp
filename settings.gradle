@@ -1,0 +1,3 @@
+rootProject.name='SampleRTS'
+include ':app', ':realtimestamp'
+
