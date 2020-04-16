@@ -3,6 +3,7 @@
 Android library for time stamping using NTP Protocol.
 
 Based on Instacart's TrueTime library with patch from https://github.com/martinfilipekcz/truetime-android.git
+
 Re-factored, reduce and re-implemented in Kotlin.
 
 ## Motivation
