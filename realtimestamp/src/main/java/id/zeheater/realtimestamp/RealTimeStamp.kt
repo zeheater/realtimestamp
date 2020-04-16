@@ -41,10 +41,16 @@ open class RealTimeStamp {
         private const val _ntpHost = "time.google.com"
     }
 
-    fun init(applicationContext: Application, allowFallbackToSystemClock : Boolean = false) {
+    /**
+     * Initialize library
+     *
+     * @param applicationContext the application context this library called
+     * @param allowFallback allow library to fallback using System's currentTimeMillis
+     */
+    fun init(applicationContext: Application, allowFallback : Boolean = false) {
         appContext = applicationContext
         cacheController = Cache(appContext)
-        isAllowFallbackToSystemClock = allowFallbackToSystemClock
+        isAllowFallbackToSystemClock = allowFallback
         isInitCalled = true
         val cachedBootId = getCacheBootId()
         if (cachedBootId == "") {
@@ -70,10 +76,23 @@ open class RealTimeStamp {
         //                                                                |_____NO____ [ requestInitialTime ]
     }
 
+    /**
+     * Get current unix timestamp
+     *
+     * @return current unix timestamp in millisecond
+     * @throws IllegalStateException
+     */
     fun now() : Long {
         return _Now().time
     }
 
+    /**
+     * Get formatted current unix timestamp
+     *
+     * @param pattern format current unix timestamp with pattern
+     * @return formatted current unix timestamp
+     * @throws IllegalStateException
+     */
     fun now(pattern: String) : String {
         return java.text.SimpleDateFormat(pattern, Locale.getDefault()).format(_Now())
     }
@@ -98,7 +117,7 @@ open class RealTimeStamp {
     }
 
     private val requestSntp = Single.fromCallable {
-        android.util.Log.e(BuildConfig.LIBRARY_PACKAGE_NAME.substring(23), "requestSntp()")
+        android.util.Log.d(BuildConfig.LIBRARY_PACKAGE_NAME.substring(23), "requestSntp()")
         val res = sntpClient.requestTime(
             _ntpHost,
             _rootDelayMax,
@@ -127,6 +146,7 @@ open class RealTimeStamp {
         ).observeOn(
             AndroidSchedulers.mainThread()
         ).retryWhen { f ->
+            android.util.Log.d(BuildConfig.LIBRARY_PACKAGE_NAME.substring(23), "requestSntp() failed, retrying...")
             f.delay(_onErrorDelayMaxMillis, TimeUnit.MILLISECONDS)
         }.subscribe({ _ -> disposeme?.dispose() }, { err ->
             android.util.Log.e(BuildConfig.LIBRARY_PACKAGE_NAME.substring(23), err?.message?:"null message")

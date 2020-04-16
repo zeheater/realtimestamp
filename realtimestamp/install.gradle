@@ -1,0 +1,40 @@
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = "id.zeheater.${project.getName()}"
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                groupId "id.zeheater.${project.getName()}"
+                artifactId project.getName()
+                name project.getName()
+                version "${android.defaultConfig.versionName}"
+                description 'Android library for time stamping using NTP Protocol'
+                url 'https://github.com/zeheater/realtimestamp'
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'zeheater'
+                        name 'Sentra Zeheater'
+                        email 'zeheater@gmail.com'
+                    }
+                }
+
+                scm {
+                    connection 'https://github.com/zeheater/realtimestamp.git'
+                    developerConnection 'https://github.com/zeheater/realtimestamp.git'
+                    url 'https://github.com/zeheater/realtimestamp'
+                }
+            }
+        }
+    }
+}

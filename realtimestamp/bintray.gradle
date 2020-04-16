@@ -1,0 +1,58 @@
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    // This configuration will result in:
+    // compile '<groupId>:<artifactId>:<libVersion>'
+    groupId = "id.zeheater.${project.getName()}" // package name of the project
+    artifactId = "id.zeheater.${project.getName()}" // module name of the library
+    libVersion = "${android.defaultConfig.versionName}"
+}
+
+version = libVersion
+
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load( new FileInputStream("local.properties"))
+
+// Bintray
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+
+    pkg {
+        repo = 'realtimestamp'
+        name = 'RealTimeStamp'
+        version {
+            name = libVersion
+        }
+        userOrg = ''
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/zeheater/realtimestamp.git'
+        desc = 'Android library for time stamping using NTP Protocol'
+        websiteUrl = 'https://github.com/zeheater/realtimestamp'
+        publish = true
+        publicDownloadNumbers = true
+    }
+}
